@@ -15,4 +15,10 @@ class TestServer < IntegrationTestCase
       assert_equal Pathname(fixture_path('image.png')).read, Pathname(File.join(dir, 'test.png')).read
     end
   end
+
+  def test_unknown_image
+    get 'missing.png'
+
+    assert_equal 404, last_response.status
+  end
 end
