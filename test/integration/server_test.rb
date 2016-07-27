@@ -3,7 +3,7 @@ require 'integration_helper'
 class TestServer < IntegrationTestCase
   def setup
     MountableImageServer.configure do |config|
-      config.source = fixture_path('')
+      config.sources << fixture_path('')
     end
   end
 

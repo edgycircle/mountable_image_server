@@ -5,5 +5,5 @@ require "mountable_image_server/version"
 module MountableImageServer
   extend Dry::Configurable
 
-  setting :source
+  setting :sources, []
 end
