@@ -1,5 +1,9 @@
+require "dry-configurable"
+
 require "mountable_image_server/version"
 
 module MountableImageServer
-  # Your code goes here...
+  extend Dry::Configurable
+
+  setting :source
 end
