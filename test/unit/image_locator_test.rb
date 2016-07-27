@@ -25,4 +25,14 @@ class TestImageLocator < UnitTestCase
 
     assert_equal Pathname(fixture_path('image.png')), result
   end
+
+  def test_handle_unknown_image
+    subject = ImageLocator.new([
+      fixture_path('')
+    ])
+
+    result = subject.path_for('missing.png')
+
+    assert_nil result
+  end
 end
