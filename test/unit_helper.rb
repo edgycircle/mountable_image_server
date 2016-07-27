@@ -1,0 +1,10 @@
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+require 'minitest/autorun'
+require 'minitest/hell'
+require 'support/path_helper'
+require 'mountable_image_server'
+
+class UnitTestCase < MiniTest::Test
+  include PathHelper
+end
