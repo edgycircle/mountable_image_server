@@ -11,7 +11,7 @@ module MountableImageServer
         image_processor = ImageProcessor.new(path, params)
 
         image_processor.run do |processed_image_path|
-          content_type(Rack::Mime::MIME_TYPES.fetch(processed_image_path.extname))
+          content_type(Rack::Mime::MIME_TYPES.fetch(processed_image_path.extname.downcase))
           body(processed_image_path.read)
         end
       else
