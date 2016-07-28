@@ -11,6 +11,7 @@ module MountableImageServer
         image_processor = ImageProcessor.new(path, params)
 
         image_processor.run do |processed_image_path|
+          cache_control :public, max_age: 500000
           content_type(Rack::Mime::MIME_TYPES.fetch(processed_image_path.extname.downcase))
           body(processed_image_path.read)
         end
