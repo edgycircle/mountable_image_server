@@ -6,13 +6,19 @@ module MountableImageServer
   class ImageProcessor
     include Skeptick
 
+    VALID_PARAMETERS = [:fit, :crop, :w, :h, :q]
+
     def initialize(path, parameters)
-      @parameters = parameters
       @path = path
+      @parameters = parameters.select do |key, value|
+        VALID_PARAMETERS.include?(key.to_sym)
+      end.map do |key, value|
+        [key.to_sym, value]
+      end.to_h
     end
 
     def run(&block)
-      yield(Pathname(path)) and return unless parameters[:h] || parameters[:w] || parameters[:q]
+      yield(Pathname(path)) and return unless parameters.any?
 
       parameters[:fit] ||= 'clip'
 
