@@ -14,10 +14,16 @@ module MountableImageServer
     def run(&block)
       yield(Pathname(path)) and return unless parameters[:h] || parameters[:w] || parameters[:q]
 
+      operations_queue = [
+        resize_operations,
+        quality_operations,
+      ].reduce([], :+)
+
       Tempfile.create(['processed-image', path.extname]) do |file|
         command = convert(path, to: file.path) do
-          set :resize, "#{parameters[:w]}x#{parameters[:h]}>" if parameters[:h] || parameters[:w]
-          set :quality, parameters[:q] if parameters[:q]
+          operations_queue.each do |operation|
+            set *operation
+          end
         end
 
         command.run
@@ -28,5 +34,21 @@ module MountableImageServer
 
     private
     attr_reader :parameters, :path
+
+    def resize_operations
+      return [] unless (parameters[:fit] == 'clip') && (parameters[:h] || parameters[:w])
+
+      [
+        [:resize, "#{parameters[:w]}x#{parameters[:h]}>"]
+      ]
+    end
+
+    def quality_operations
+      return [] unless parameters[:q]
+
+      [
+        [:quality, parameters[:q]]
+      ]
+    end
   end
 end
