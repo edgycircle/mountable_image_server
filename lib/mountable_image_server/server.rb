@@ -7,6 +7,19 @@ module MountableImageServer
     get '/:fid' do |fid|
       locator = ImageLocator.new(MountableImageServer.config.sources)
 
+      begin
+        respond_with_image(locator, fid, params)
+      rescue Skeptick::ImageMagickError => e
+        if e.message.include?('convert: unable to open image')
+          respond_with_image(locator, fid, params)
+        else
+          halt(404)
+        end
+      end
+    end
+
+    private
+    def respond_with_image(locator, fid, params)
       if path = locator.path_for(fid)
         image_processor = ImageProcessor.new(path, params)
 
