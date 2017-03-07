@@ -6,7 +6,7 @@ module MountableImageServer
   class ImageProcessor
     include Skeptick
 
-    VALID_PARAMETERS = [:fit, :crop, :w, :h, :q]
+    VALID_PARAMETERS = [:fit, :crop, :w, :h, :q, :darken]
 
     def initialize(path, parameters)
       @path = path
@@ -26,6 +26,7 @@ module MountableImageServer
         resize_operations,
         crop_operations,
         quality_operations,
+        darken_operations
       ].reduce([], :+)
 
       Tempfile.create(['processed-image', path.extname]) do |file|
@@ -43,6 +44,15 @@ module MountableImageServer
 
     private
     attr_reader :parameters, :path
+
+    def darken_operations
+      return [] unless parameters[:darken]
+
+      [
+        [:fill, 'black'],
+        [:colorize, parameters[:darken]]
+      ]
+    end
 
     def resize_operations
       return [] unless (parameters[:fit] == 'clip') && (parameters[:h] || parameters[:w])
