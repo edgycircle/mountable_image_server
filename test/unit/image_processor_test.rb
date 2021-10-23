@@ -148,6 +148,35 @@ class TestImageProcessor < UnitTestCase
     end
   end
 
+  def test_run_processor_with_non_sense_parameter
+    [
+      ['image.jpg', { q: '' }],
+      ['image.jpg', { q: 'a' }],
+      ['image.jpg', { q: '101' }],
+      ['image.jpg', { fit: '' }],
+      ['image.jpg', { fit: '0' }],
+      ['image.jpg', { fit: 'abc' }],
+      ['image.jpg', { fm: '' }],
+      ['image.jpg', { fm: 'foo' }],
+      ['image.jpg', { w: '' }],
+      ['image.jpg', { w: 'foo' }],
+      ['image.jpg', { h: '' }],
+      ['image.jpg', { h: 'foo' }],
+      ['image.jpg', { darken: '' }],
+      ['image.jpg', { darken: 'a' }],
+      ['image.jpg', { darken: '101' }],
+    ].each do |(file_name, parameters)|
+      path = Pathname(fixture_path(file_name))
+      subject = ImageProcessor.new(path, parameters)
+
+      subject.run do |processed_path|
+        # Non-sense parameters will be ignored,
+        # therefore the original image will not be modified
+        assert_equal path, processed_path, "Image '#{file_name}' with parameters #{parameters} has been modified although it shouldn't."
+      end
+    end
+  end
+
   private
   def detect_image_information(property, path)
     # Docs about formatting information:
