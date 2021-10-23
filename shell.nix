@@ -17,6 +17,7 @@ pkgs.mkShell {
     phantomjs
     rubyPackages_2_5.nokogiri
     libiconv
+    imagemagick
   ];
 
   shellHook = ''
