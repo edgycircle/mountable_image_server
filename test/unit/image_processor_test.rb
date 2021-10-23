@@ -17,7 +17,7 @@ class TestImageProcessor < UnitTestCase
   end
 
   def test_run_processor_with_quality_parameter
-    # There is no quality for PNG like there is for JPEG
+    # There is no quality scale for PNG and WEBP like there is for JPEG
     # therefore we can not check the result properly
     [
       ['unsplash-pcvpM9Ec5LY-h640.jpg', { q: '50' }],
@@ -35,11 +35,17 @@ class TestImageProcessor < UnitTestCase
   def test_run_processor_with_format_parameter
     [
       ['unsplash-10Wq29jSmvM-h640.jpg', { fm: 'png' }, 'PNG'],
+      ['unsplash-10Wq29jSmvM-h640.jpg', { fm: 'webp' }, 'WEBP'],
+      ['unsplash-pcvpM9Ec5LY-h640.webp', { fm: 'jpg' }, 'JPEG'],
+      ['unsplash-pcvpM9Ec5LY-h640.webp', { fm: 'png' }, 'PNG'],
       ['unsplash-10Wq29jSmvM-h640.tiff', { fm: 'jpg' }, 'JPEG'],
+      ['unsplash-10Wq29jSmvM-h640.tiff', { fm: 'webp' }, 'WEBP'],
       ['image.png', { fm: 'jpg' }, 'JPEG'],
+      ['image.png', { fm: 'webp' }, 'WEBP'],
       ['image.png', { fm: 'gif' }, 'GIF'],
       ['image.gif', { fm: 'jpg' }, 'JPEG'],
       ['image.gif', { fm: 'png' }, 'PNG'],
+      ['image.gif', { fm: 'webp' }, 'WEBP'],
     ].each do |(file_name, parameters, expected_format)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
 
@@ -54,6 +60,7 @@ class TestImageProcessor < UnitTestCase
   def test_run_processor_with_width_parameter
     [
       ['unsplash-Wv0F89mi660-w640.jpg', { w: '100' }],
+      ['unsplash-Wv0F89mi660-w640.webp', { w: '100' }],
       ['image.png', { w: '100' }],
     ].each do |(file_name, parameters)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
@@ -69,6 +76,7 @@ class TestImageProcessor < UnitTestCase
   def test_run_processor_with_height_parameter
     [
       ['unsplash-pcvpM9Ec5LY-h640.jpg', { h: '100' }],
+      ['unsplash-pcvpM9Ec5LY-h640.webp', { h: '100' }],
       ['image.png', { h: '100' }],
     ].each do |(file_name, parameters)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
@@ -85,6 +93,8 @@ class TestImageProcessor < UnitTestCase
     [
       ['unsplash-pcvpM9Ec5LY-h640.jpg', { w: '100', h: '100' }, :portrait],
       ['unsplash-Wv0F89mi660-w640.jpg', { w: '100', h: '100' }, :landscape],
+      ['unsplash-pcvpM9Ec5LY-h640.webp', { w: '100', h: '100' }, :portrait],
+      ['unsplash-Wv0F89mi660-w640.webp', { w: '100', h: '100' }, :landscape],
       ['image.png', { w: '100', h: '100' }, :square],
     ].each do |(file_name, parameters, initial_orientation)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
@@ -116,6 +126,8 @@ class TestImageProcessor < UnitTestCase
     [
       ['unsplash-pcvpM9Ec5LY-h640.jpg', { fit: 'crop', w: '100', h: '80' }],
       ['unsplash-Wv0F89mi660-w640.jpg', { fit: 'crop', w: '100', h: '80' }],
+      ['unsplash-pcvpM9Ec5LY-h640.webp', { fit: 'crop', w: '100', h: '80' }],
+      ['unsplash-Wv0F89mi660-w640.webp', { fit: 'crop', w: '100', h: '80' }],
       ['image.png', { fit: 'crop', w: '100', h: '80' }],
     ].each do |(file_name, parameters)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
@@ -132,7 +144,7 @@ class TestImageProcessor < UnitTestCase
 
   def test_run_processor_with_combined_parameters_on_large_image
     [
-      ['david-12.jpg', { fit: 'crop', w: '100', h: '80' }, 'JPEG'],
+      ['david-12.jpg', { fit: 'crop', w: '100', h: '80', fm: 'webp' }, 'WEBP'],
     ].each do |(file_name, parameters, expected_format)|
       subject = ImageProcessor.new(Pathname(fixture_path(file_name)), parameters)
 
