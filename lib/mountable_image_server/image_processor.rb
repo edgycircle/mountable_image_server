@@ -15,14 +15,19 @@ module MountableImageServer
     # `fm`     - Format of image, use 'jpg', 'png', 'gif', ...
     VALID_PARAMETERS = [:fit, :w, :h, :q, :darken, :fm]
 
+    PARAMETER_VALUE_PATTERNS = {
+      fit: /^(clip|crop)$/,
+      h: /^\d+$/,
+      w: /^\d+$/,
+      q: /^([0-9]|[1-9][0-9]|100)$/,
+      darken: /^([0-9]|[1-9][0-9]|100)$/,
+      fm: /^(jpg|png|gif)$/,
+    }
+
     def initialize(path, parameters)
       @path = path
       @file_format = path.extname.downcase.scan(/[^\.]+/).last
-      @parameters = parameters.select do |key, value|
-        VALID_PARAMETERS.include?(key.to_sym) && value =~ /\S+/
-      end.map do |key, value|
-        [key.to_sym, value.strip.downcase]
-      end.to_h
+      @parameters = sanitize_parameters(parameters)
     end
 
     def run(&block)
@@ -69,6 +74,14 @@ module MountableImageServer
 
     private
     attr_reader :parameters, :path, :file_format
+
+    def sanitize_parameters(raw_parameters)
+      raw_parameters.select do |key, value|
+        VALID_PARAMETERS.include?(key.to_sym) && value =~ PARAMETER_VALUE_PATTERNS.fetch(key.to_sym)
+      end.map do |key, value|
+        [key.to_sym, value.strip.downcase]
+      end.to_h
+    end
 
     def darken_operations
       return [] unless parameters[:darken]
