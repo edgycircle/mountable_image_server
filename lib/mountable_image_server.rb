@@ -7,5 +7,5 @@ module MountableImageServer
 
   extend Dry::Configurable
 
-  setting :sources, []
+  setting :sources, default: []
 end
